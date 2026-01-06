@@ -21,8 +21,8 @@ run_res() {
 }
 
 # 校验参数
-if [[ ! "$check_type" =~ ^(sb|all|keep|sc)$ ]]; then
-  log "无效参数: $check_type，只支持 sb、sc、all、keep"
+if [[ ! "$check_type" =~ ^(keep|all|xt|st|t)$ ]]; then
+  log "无效参数: $check_type，只支持 keep、all、st、xt、t"
   exit 1
 fi
 
@@ -30,23 +30,22 @@ fi
 [[ "$check_type" == "keep" ]] && run_res "每日重启" && exit 0
 
 # 进程检测
-sb_exists=1
-xray_exists=1
-tunnel_exists=1
-
-[[ "$check_type" =~ ^(all|sb|sc)$ ]] && ps aux | grep -q "[a]gsbx/sing" && sb_exists=0
-[[ "$check_type" == "all" ]] && ps aux | grep -q "[a]gsbx/xray" && xray_exists=0
-[[ "$check_type" =~ ^(all|sc)$ ]] && ps aux | grep -q "[a]gsbx/cloud" && tunnel_exists=0
+ps aux | grep -q "[a]gsbx/xray" && xray_exists=0 || xray_exists=1
+ps aux | grep -q '[a]gsbx/sing' && sbox_exists=0 || sbox_exists=1
+ps aux | grep -q "[a]gsbx/cloud" && tunnel_exists=0 || tunnel_exists=1
 
 case "$check_type" in
-sb)
-  [[ $sb_exists -eq 0 ]] && echo "singbox 正在运行, 退出..." && exit 0
+t)
+  [[ $tunnel_exists -eq 0 ]] && echo "tunnel 正在运行, 退出..." && exit 0
   ;;
-sc)
-  [[ $sb_exists -eq 0 && $tunnel_exists -eq 0 ]] && echo "singbox 和 tunnel 正在运行, 退出..." && exit 0
+xt)
+  [[ $xray_exists -eq 0 && $tunnel_exists -eq 0 ]] && echo "xray 和 tunnel 正在运行, 退出..." && exit 0
+  ;;
+st)
+  [[ $sbox_exists -eq 0 && $tunnel_exists -eq 0 ]] && echo "singbox 和 tunnel 正在运行, 退出..." && exit 0
   ;;
 all)
-  [[ $sb_exists -eq 0 && $tunnel_exists -eq 0 && $xray_exists -eq 0 ]] && echo "agsbx 正在运行, 退出..." && exit 0
+  [[ $xray_exists -eq 0 && $sbox_exists -eq 0 && $tunnel_exists -eq 0 ]] && echo "agsbx 正在运行, 退出..." && exit 0
   ;;
 esac
 
