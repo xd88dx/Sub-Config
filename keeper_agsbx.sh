@@ -21,7 +21,7 @@ run_res() {
 }
 
 # 校验参数
-if [[ ! "$check_type" =~ ^(keep|xt|st|t)$ ]]; then
+if [[ ! "$check_type" =~ ^(keep|xt|st|t|all)$ ]]; then
   log "无效参数: $check_type，只支持 keep、st、xt、t"
   exit 1
 fi
