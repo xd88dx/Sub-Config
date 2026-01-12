@@ -21,8 +21,8 @@ run_res() {
 }
 
 # 校验参数
-if [[ ! "$check_type" =~ ^(keep|all|xt|st|t)$ ]]; then
-  log "无效参数: $check_type，只支持 keep、all、st、xt、t"
+if [[ ! "$check_type" =~ ^(keep|xt|st|t)$ ]]; then
+  log "无效参数: $check_type，只支持 keep、st、xt、t"
   exit 1
 fi
 
@@ -44,10 +44,13 @@ xt)
 st)
   [[ $sbox_exists -eq 0 && $tunnel_exists -eq 0 ]] && echo "singbox 和 tunnel 正在运行, 退出..." && exit 0
   ;;
-all)
-  [[ $xray_exists -eq 0 && $sbox_exists -eq 0 && $tunnel_exists -eq 0 ]] && echo "agsbx 正在运行, 退出..." && exit 0
+*)
+  if [[ $tunnel_exists -eq 1 ]]; then
+    reboot
+  elif [[ ! ($xray_exists -eq 0 && $sbox_exists -eq 0 && $tunnel_exists -eq 0) ]]; then
+    run_res "进程检测失败, 开始重启..."
+  else
+    echo "agsbx 正在运行, 退出..." && exit 0
+  fi
   ;;
 esac
-
-# 持久保活
-run_res "进程检测失败, 开始重启..."
