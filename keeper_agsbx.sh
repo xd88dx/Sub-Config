@@ -30,9 +30,9 @@ fi
 [[ "$check_type" == "keep" ]] && run_res "每日重启" && exit 0
 
 # 进程检测
-ps aux | grep -q "[a]gsbx/xray" && xray_exists=0 || xray_exists=1
-ps aux | grep -q '[a]gsbx/sing' && sbox_exists=0 || sbox_exists=1
-ps aux | grep -q "[a]gsbx/cloud" && tunnel_exists=0 || tunnel_exists=1
+pgrep -f "[a]gsbx/xray" >/dev/null 2>&1 && xray_exists=0 || xray_exists=1
+pgrep -f '[a]gsbx/sing' >/dev/null 2>&1 && sbox_exists=0 || sbox_exists=1
+pgrep -f "[a]gsbx/cloud" >/dev/null 2>&1 && tunnel_exists=0 || tunnel_exists=1
 
 case "$check_type" in
 t)
