@@ -32,6 +32,13 @@ jobs:
           cp ACL4SSR_Online_MultiCountry.remote.ini ACL4SSR_Online_MultiCountry_mini.ini
           patch ACL4SSR_Online_MultiCountry_mini.ini diff/patch_acl4ssr_mini.diff
 
+      - name: Download ACL4SSR config (base)
+        run: |
+          curl -sL https://raw.githubusercontent.com/cmliu/ACL4SSR/main/Clash/config/ACL4SSR_Online_MultiCountry.ini -o ACL4SSR_Online_MultiCountry.remote.ini
+          dos2unix ACL4SSR_Online_MultiCountry.remote.ini
+          cp ACL4SSR_Online_MultiCountry.remote.ini ACL4SSR_Online_MultiCountry_base.ini
+          patch ACL4SSR_Online_MultiCountry_base.ini diff/patch_acl4ssr_base.diff
+
       - name: Download rename.js
         run: |
           curl -sL https://raw.githubusercontent.com/Keywos/rule/main/rename.js -o rename.remote.js
