@@ -1,0 +1,56 @@
+name: KeepAlive Update Time
+
+# 独立于各服务商续期任务：只负责更新仓库根目录的 time.txt，
+# 避免 GitHub 因仓库长期无活动而自动停用定时任务。
+on:
+  workflow_dispatch:
+  schedule:
+    # 每天北京时间 12:00（UTC 04:00）执行一次
+    - cron: '0 4 * * *'
+
+permissions:
+  contents: write # 提交 time.txt
+  actions: write # 清理本工作流旧运行记录
+
+concurrency:
+  group: keepalive-time
+  cancel-in-progress: false
+
+jobs:
+  update-time:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: 检出仓库代码
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: 🕒 更新时间
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          echo "$(TZ=Asia/Shanghai date +'%Y-%m-%d %H:%M:%S')" > time.txt
+          git add time.txt
+          if git diff --cached --quiet; then
+            echo "No need to commit"
+          else
+            git commit -m "⏱️ Auto Update by Github Actions $(TZ=Asia/Shanghai date +'%Y-%m-%d %H:%M:%S')"
+            git push origin main
+          fi
+
+      - name: 🧹 清理旧的工作流运行记录
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # 保留最近 20 条记录，其余删除
+          gh run list \
+            --workflow="${{ github.workflow }}" \
+            --limit=100 \
+            --json databaseId \
+            --jq ".[20:] | .[].databaseId" \
+            | while read -r run_id; do
+                echo "删除运行记录: $run_id"
+                gh run delete "$run_id" || true
+              done
