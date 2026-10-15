@@ -21,8 +21,8 @@ run_res() {
 }
 
 # 校验参数
-if [[ ! "$check_type" =~ ^(keep|xt|st|t|all)$ ]]; then
-  log "无效参数: $check_type，只支持 keep、st、xt、t"
+if [[ ! "$check_type" =~ ^(keep|xt|st|t|x|s|all)$ ]]; then
+  log "无效参数: $check_type，只支持 keep、st、xt、t、x、s"
   exit 1
 fi
 
@@ -37,12 +37,23 @@ pgrep -f "[a]gsbx/cloud" >/dev/null 2>&1 && tunnel_exists=0 || tunnel_exists=1
 case "$check_type" in
 t)
   [[ $tunnel_exists -eq 0 ]] && echo "tunnel 正在运行, 退出..." && exit 0
+  echo "tunnel 未运行" && exit 1
+  ;;
+x)
+  [[ $xray_exists -eq 0 ]] && echo "xray 正在运行, 退出..." && exit 0
+  echo "xray 未运行" && exit 1
+  ;;
+s)
+  [[ $sbox_exists -eq 0 ]] && echo "singbox 正在运行, 退出..." && exit 0
+  echo "singbox 未运行" && exit 1
   ;;
 xt)
   [[ $xray_exists -eq 0 && $tunnel_exists -eq 0 ]] && echo "xray 和 tunnel 正在运行, 退出..." && exit 0
+  echo "xray 或 tunnel 未运行" && exit 1
   ;;
 st)
   [[ $sbox_exists -eq 0 && $tunnel_exists -eq 0 ]] && echo "singbox 和 tunnel 正在运行, 退出..." && exit 0
+  echo "singbox 或 tunnel 未运行" && exit 1
   ;;
 *)
   if [[ $tunnel_exists -eq 1 ]]; then
