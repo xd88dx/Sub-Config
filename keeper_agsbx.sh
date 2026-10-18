@@ -2,13 +2,13 @@
 
 check_type="${1:-all}"
 log_file="$(pwd)/log_agsbx.log"
+: >"$log_file"
 
 log() {
   echo "$(date +'%Y-%m-%d %H:%M:%S') $*" | tee -a "$log_file"
 }
 
 run_res() {
-  echo >"$log_file"
   log "$1"
 
   output=$(bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosbx/main/argosbx.sh) res 2>&1)
@@ -36,32 +36,33 @@ pgrep -f "[a]gsbx/cloud" >/dev/null 2>&1 && tunnel_exists=0 || tunnel_exists=1
 
 case "$check_type" in
 t)
-  [[ $tunnel_exists -eq 0 ]] && echo "tunnel 正在运行, 退出..." && exit 0
-  echo "tunnel 未运行" && exit 1
+  [[ $tunnel_exists -eq 0 ]] && log "tunnel 正在运行, 退出..." && exit 0
+  log "tunnel 未运行" && exit 1
   ;;
 x)
-  [[ $xray_exists -eq 0 ]] && echo "xray 正在运行, 退出..." && exit 0
-  echo "xray 未运行" && exit 1
+  [[ $xray_exists -eq 0 ]] && log "xray 正在运行, 退出..." && exit 0
+  log "xray 未运行" && exit 1
   ;;
 s)
-  [[ $sbox_exists -eq 0 ]] && echo "singbox 正在运行, 退出..." && exit 0
-  echo "singbox 未运行" && exit 1
+  [[ $sbox_exists -eq 0 ]] && log "singbox 正在运行, 退出..." && exit 0
+  log "singbox 未运行" && exit 1
   ;;
 xt)
-  [[ $xray_exists -eq 0 && $tunnel_exists -eq 0 ]] && echo "xray 和 tunnel 正在运行, 退出..." && exit 0
-  echo "xray 或 tunnel 未运行" && exit 1
+  [[ $xray_exists -eq 0 && $tunnel_exists -eq 0 ]] && log "xray 和 tunnel 正在运行, 退出..." && exit 0
+  log "xray 或 tunnel 未运行" && exit 1
   ;;
 st)
-  [[ $sbox_exists -eq 0 && $tunnel_exists -eq 0 ]] && echo "singbox 和 tunnel 正在运行, 退出..." && exit 0
-  echo "singbox 或 tunnel 未运行" && exit 1
+  [[ $sbox_exists -eq 0 && $tunnel_exists -eq 0 ]] && log "singbox 和 tunnel 正在运行, 退出..." && exit 0
+  log "singbox 或 tunnel 未运行" && exit 1
   ;;
 *)
   if [[ $tunnel_exists -eq 1 ]]; then
+    log "tunnel 未运行，准备重启服务器..."
     reboot
   elif [[ ! ($xray_exists -eq 0 && $sbox_exists -eq 0 && $tunnel_exists -eq 0) ]]; then
     run_res "进程检测失败, 开始重启..."
   else
-    echo "agsbx 正在运行, 退出..." && exit 0
+    log "agsbx 正在运行, 退出..." && exit 0
   fi
   ;;
 esac
