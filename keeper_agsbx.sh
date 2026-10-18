@@ -20,6 +20,8 @@ run_res() {
   fi
 }
 
+id
+
 # 校验参数
 if [[ ! "$check_type" =~ ^(keep|xt|st|t|x|s|all)$ ]]; then
   log "无效参数: $check_type，只支持 keep、st、xt、t、x、s"
