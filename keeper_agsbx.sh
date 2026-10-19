@@ -20,7 +20,7 @@ run_res() {
   fi
 }
 
-id
+log "当前用户：$(whoami)"
 
 # 校验参数
 if [[ ! "$check_type" =~ ^(keep|xt|st|t|x|s|all)$ ]]; then
