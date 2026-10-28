@@ -8,11 +8,17 @@ log() {
   echo "$(date +'%Y-%m-%d %H:%M:%S') $*" | tee -a "$log_file"
 }
 
+# 调用远程 argosbx.sh 的子命令（如 del / res），第二个参数为 0 时不把输出写入日志
 run_argosbx() {
   local sub="$1"
+  local to_log="${2:-1}"
   log "执行 argosbx.sh $sub ..."
 
-  bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosbx/main/argosbx.sh) "$sub" >>"$log_file" 2>&1
+  if [[ "$to_log" -eq 0 ]]; then
+    bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosbx/main/argosbx.sh) "$sub" >/dev/null 2>&1
+  else
+    bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosbx/main/argosbx.sh) "$sub" >>"$log_file" 2>&1
+  fi
   local rc=$?
   log "argosbx.sh $sub 执行完毕, 退出码: $rc"
 
@@ -25,7 +31,7 @@ deploy() {
   log "$1"
 
   if [[ -f "$script" ]]; then
-    run_argosbx del
+    run_argosbx del 0
 
     bash "$script" >>"$log_file" 2>&1
     local rc=$?
