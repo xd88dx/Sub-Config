@@ -103,13 +103,12 @@ st)
   exit $?
   ;;
 *)
-  if [[ $tunnel_exists -eq 1 ]]; then
-    log "tunnel 未运行，准备重启服务器..."
-    reboot
-  elif [[ ! ($xray_exists -eq 0 && $sbox_exists -eq 0 && $tunnel_exists -eq 0) ]]; then
-    run_res "进程检测失败, 开始重启..."
-  else
+  if [[ $xray_exists -eq 0 && $sbox_exists -eq 0 && $tunnel_exists -eq 0 ]]; then
     log "agsbx 正在运行, 退出..." && exit 0
+  else
+    log "xray/singbox/tunnel 任一未运行"
+    deploy "开始执行 deploy_agsbx.sh..."
+    exit $?
   fi
   ;;
 esac
