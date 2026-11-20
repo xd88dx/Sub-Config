@@ -15,9 +15,9 @@ run_argosbx() {
   log "执行 argosbx.sh $sub ..."
 
   if [[ "$to_log" -eq 0 ]]; then
-    bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosbx/main/argosbx.sh) "$sub" >/dev/null 2>&1
+    bash <(curl -Ls https://raw.githubusercontent.com/xd88dx/argosbx/main/argosbx.sh) "$sub" >/dev/null 2>&1
   else
-    bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosbx/main/argosbx.sh) "$sub" >>"$log_file" 2>&1
+    bash <(curl -Ls https://raw.githubusercontent.com/xd88dx/argosbx/main/argosbx.sh) "$sub" >>"$log_file" 2>&1
   fi
   local rc=$?
   log "argosbx.sh $sub 执行完毕, 退出码: $rc"
@@ -46,7 +46,7 @@ deploy() {
 run_res() {
   log "$1"
 
-  output=$(bash <(curl -Ls https://raw.githubusercontent.com/yonggekkk/argosbx/main/argosbx.sh) res 2>&1)
+  output=$(bash <(curl -Ls https://raw.githubusercontent.com/xd88dx/argosbx/main/argosbx.sh) res 2>&1)
   echo "$output" >>"$log_file"
 
   if echo "$output" | grep -q "未安装"; then
